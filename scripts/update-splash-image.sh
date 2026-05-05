@@ -1,0 +1,1 @@
+sudo cp ../resources/splash.png /usr/share/plymouth/themes/pix

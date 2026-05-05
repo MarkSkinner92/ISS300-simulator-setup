@@ -1,0 +1,10 @@
+[Unit]
+Description=Initialize GPIO pins
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/init-gpio/init-gpio.sh
+
+[Install]
+WantedBy=multi-user.target
