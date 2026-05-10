@@ -1,0 +1,43 @@
+# Replace autostart with this
+
+
+# Hide cursor on startup (simulate Win+H hotkey)
+wtype -M logo -k h -m logo &
+wlr-randr --output DSI-1 --mode 720x1280@60
+wlr-randr --output DSI-1 --transform normal
+
+# Wait for localhost:5173, then launch chromium (or fall back to terminal)
+(
+    WAITED=0
+    while ! curl -sf http://localhost:5173 > /dev/null 2>&1; do
+        sleep 2
+        WAITED=$((WAITED + 2))
+        if [ $WAITED -ge 60 ]; then
+            WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000 foot &
+            exit 0
+        fi
+    done
+
+    /usr/bin/chromium \
+        --kiosk \
+        --app=http://localhost:5173 \
+        --no-sandbox \
+        --no-first-run \
+        --noerrdialogs \
+        --disable-infobars \
+        --disable-dev-shm-usage \
+        --password-store=basic \
+        --hide-scrollbars \
+        --dbus-stub \
+        --enable-virtual-keyboard \
+        --keyboard-mode=onscreen \
+        --disable-usb-keyboard-detect \
+        --touch-events=enabled \
+        --ignore-gpu-blocklist \
+        --enable-gpu-rasterization \
+        --enable-zero-copy \
+        --enable-native-gpu-memory-buffers \
+        --use-gl=desktop \
+        --disable-features=UseChromeOSDirectVideoDecoder \
+        --autoplay-policy=no-user-gesture-required &
+) &
